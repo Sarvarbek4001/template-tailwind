@@ -8,7 +8,7 @@ export default function UnAuthentificationApp() {
   const handleSubmit = async (evt) => {
     evt.preventDefault();
     try {
-      const response = await fetch("http://192.168.3.42:9696/login", {
+      const response = await fetch("http://192.168.1.13:5000/api/auth/signin", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -18,7 +18,8 @@ export default function UnAuthentificationApp() {
       });
       if (response.ok) {
         const json = await response.json();
-        dispatch(login({ user: json.user, token: json.token }));
+        console.log(json);
+        dispatch(login({ token: json.token, user: json.user }));
       }
     } catch (err) {
       console.log(err.message);
@@ -62,7 +63,7 @@ export default function UnAuthentificationApp() {
                   <input
                     id="email"
                     name="email"
-                    type="email"
+                    type="text"
                     autoComplete="email"
                     required
                     className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"

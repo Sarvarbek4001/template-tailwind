@@ -7,6 +7,7 @@ import {
 import { PencilAltIcon } from "@heroicons/react/solid";
 import ReactPaginate from "react-paginate";
 import Select from "./select";
+import { useSelector } from "react-redux/es/exports";
 /* This example requires Tailwind CSS v2.0+ */
 const people = [
   {
@@ -15,172 +16,52 @@ const people = [
     email: "lindsay.walton@example.com",
     role: "Member",
   },
-  {
-    name: "Lindsay Walton2",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton3",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton4",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton5",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton6",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton7",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton8",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton9",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton10",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton11",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton12",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton13",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton14",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton15",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton16",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton17",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton18",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton19",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton20",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton21",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton22",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton23",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-  {
-    name: "Lindsay Walton24",
-    title: "Front-end Developer",
-    email: "lindsay.walton@example.com",
-    role: "Member",
-  },
-
-  // More people...
 ];
 
-export default function Table() {
-  // We start with an empty list of items.
-  const [currentItems, setCurrentItems] = useState([]);
-  const [pageCount, setPageCount] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  //   const itemsPerPage = 9;
-  // Here we use item offsets; we could also use page offsets
-  // following the API or data you're working with.
+export default function Table2() {
+  const [pageCount, setPageCount] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [itemOffset, setItemOffset] = useState(0);
-  useEffect(() => {
-    // Fetch items from another resources.
-    const endOffset = parseInt(itemOffset) + parseInt(itemsPerPage);
-    console.log(`Loading items from ${itemOffset} to ${endOffset}`);
-    setCurrentItems(people.slice(parseInt(itemOffset), endOffset));
-    setPageCount(Math.ceil(people.length / parseInt(itemsPerPage)));
-  }, [itemOffset, itemsPerPage]);
+  const [data, setData] = useState([]);
+  const [recordsTotal, setRecordsTotal] = useState(0);
+  const token = useSelector((state) => state.token);
 
-  // Invoke when user click to request another page.
+  useEffect(() => {
+    fetchData();
+    // const endOffset = parseInt(itemOffset) + parseInt(itemsPerPage);
+    // console.log(`Loading items from ${itemOffset} to ${endOffset}`);
+    setPageCount(Math.ceil(recordsTotal / parseInt(itemsPerPage)));
+  }, [itemOffset, itemsPerPage, recordsTotal]);
+
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * parseInt(itemsPerPage)) % people.length;
-    // console.log(
-    //   `User requested page number ${event.selected}, which is offset ${newOffset}`
-    // );
+    console.log(event.selected);
+    const newOffset = (event.selected * parseInt(itemsPerPage)) % recordsTotal;
     setItemOffset(newOffset);
+  };
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        "http://192.168.1.13:5000/api/region/table",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            draw: 1,
+            start: itemOffset,
+            length: itemsPerPage,
+          }),
+        }
+      );
+      const json = await response.json();
+      console.log(json);
+      setData(json.body.data);
+      setRecordsTotal(json.body.recordsFiltered);
+    } catch (err) {
+      console.log(err.message);
+    }
   };
   return (
     <div className="px-4 sm:px-6 lg:px-8">
@@ -213,26 +94,21 @@ export default function Table() {
                       scope="col"
                       className="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6"
                     >
+                      Id
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
+                      Country Name
+                    </th>
+                    <th
+                      scope="col"
+                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
+                    >
                       Name
                     </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Title
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Email
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900"
-                    >
-                      Role
-                    </th>
+
                     <th
                       scope="col"
                       className="relative py-3.5 pl-3 pr-4 sm:pr-6"
@@ -242,20 +118,18 @@ export default function Table() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
-                  {currentItems.map((person) => (
-                    <tr key={person.name}>
+                  {data.map((item, index) => (
+                    <tr key={item.id}>
                       <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                        {person.name}
+                        {index + 1}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                        {person.title}
+                        {item.countryName}
                       </td>
                       <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                        {person.email}
+                        {item.name}
                       </td>
-                      <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
-                        {person.role}
-                      </td>
+
                       <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 flex justify-evenly ">
                         <button className="mr-2 border py-1 px-3 bg-red-900 rounded-[4px] text-white transform hover:scale-110 hover:bg-white hover:border-red-900 hover:text-red-900 ease-in-out duration-300">
                           <PencilAltIcon className="h-6 w-6" />
@@ -279,7 +153,7 @@ export default function Table() {
           <ChevronRightIcon className="text-white w-6 h-6 bg-gray-900 rounded-[4px] ml-2" />
         }
         onPageChange={handlePageClick}
-        pageRangeDisplayed={0}
+        pageRangeDisplayed={3}
         pageCount={pageCount}
         previousLabel={
           <ChevronLeftIcon className="text-white w-6 h-6 bg-gray-900 rounded-[4px] mr-2" />

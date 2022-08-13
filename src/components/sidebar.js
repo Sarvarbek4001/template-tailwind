@@ -1,11 +1,13 @@
 import { Fragment, useState } from "react";
 import { Dialog, Menu, Transition } from "@headlessui/react";
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Hero from "./hero";
 import Contact from "./contact";
 import Table from "./table";
 import Team from "./team";
 import PaginatedItems from "./pagination";
+import { logOut } from "../features/user/userSlice";
+import { useDispatch } from "react-redux/es/exports";
 import {
   BellIcon,
   CalendarIcon,
@@ -19,6 +21,7 @@ import {
 } from "@heroicons/react/outline";
 import { SearchIcon } from "@heroicons/react/solid";
 import Aniamations from "./animations";
+import Table2 from "./table2";
 
 const navigation = [
   { name: "Dashboard", to: "/", icon: HomeIcon, current: true },
@@ -27,11 +30,12 @@ const navigation = [
   { name: "Calendar", to: "/features", icon: CalendarIcon, current: false },
   { name: "Documents", to: "/services", icon: InboxIcon, current: false },
   { name: "Animations", to: "/animations", icon: ChartBarIcon, current: false },
+  { name: "Data Table", to: "/table", icon: ChartBarIcon, current: false },
 ];
 const userNavigation = [
   { name: "Your Profile", href: "#" },
   { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Log out", href: "#" },
 ];
 
 function classNames(...classes) {
@@ -41,6 +45,7 @@ function classNames(...classes) {
 export default function Example() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [navigations, setNavigations] = useState(navigation);
+  const dispatch = useDispatch();
 
   const handleClick = (item) => {
     let data = navigations.map((i) => {
@@ -263,7 +268,14 @@ export default function Example() {
                   >
                     <Menu.Items className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
                       {userNavigation.map((item) => (
-                        <Menu.Item key={item.name}>
+                        <Menu.Item
+                          key={item.name}
+                          onClick={() => {
+                            if (item.name === "Log out") {
+                              dispatch(logOut());
+                            }
+                          }}
+                        >
                           {({ active }) => (
                             <a
                               href={item.href}
@@ -291,6 +303,7 @@ export default function Example() {
             <Route path="features" element={<Contact />} />
             <Route path="services" element={<PaginatedItems />} />
             <Route path="animations" element={<Aniamations />} />
+            <Route path="table" element={<Table2 />} />
           </Routes>
           {/* main page */}
         </div>
